@@ -1,7 +1,11 @@
 [package]
 name = "cases"
-version = "0.1.0"
-authors = ["dunlord"]
+version = "0.0.1"
+authors = ["Marc Esquerra <esquerra@bryghts.com>"]
 edition = "2018"
+description = "Case converting utility for the console"
+license = "Unlicense"
+homepage = "https://github.com/marcesquerra/cases"
+repository = "https://github.com/marcesquerra/cases"
 
 [dependencies]
