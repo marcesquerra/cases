@@ -3,6 +3,7 @@ extern crate inflector;
 use std::io::{self, Read};
 use std::env;
 use inflector::Inflector;
+use std::process::exit;
 
 fn main() {
 
@@ -15,6 +16,15 @@ fn main() {
         "upper" => Some(|s| s.to_uppercase()),
         "lower" => Some(|s| s.to_lowercase()),
         "camel" => Some(|s| s.to_camel_case()),
+        "class" => Some(|s| s.to_class_case()),
+        "kebab" => Some(|s| s.to_kebab_case()),
+        "train" => Some(|s| s.to_train_case()),
+        "table" => Some(|s| s.to_table_case()),
+        "sentence" => Some(|s| s.to_sentence_case()),
+        "snake" => Some(|s| s.to_snake_case()),
+        "pascal" => Some(|s| s.to_pascal_case()),
+        "screamingsnake" => Some(|s| s.to_screaming_snake_case()),
+        "title" => Some(|s| s.to_title_case()),
         _ => None,
     }
 
@@ -37,7 +47,7 @@ fn main() {
         }
       },
       None =>
-        println!("{}", "Uuups")
+        exit(2)
     };
 
   }
@@ -47,11 +57,11 @@ fn main() {
       Some(f) =>
         println!("{}", f(a)),
       None =>
-        println!("{}", "Uuups")
+        exit(2)
     };
   }
   else {
-    println!("{}", "ups");
+        exit(1)
   }
 
 
