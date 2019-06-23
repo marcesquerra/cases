@@ -9,3 +9,4 @@ homepage = "https://github.com/marcesquerra/cases"
 repository = "https://github.com/marcesquerra/cases"
 
 [dependencies]
+Inflector = "0.11.4"
