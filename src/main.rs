@@ -1,9 +1,12 @@
-extern crate inflector;
+//extern crate inflector;
+extern crate nom;
+
+mod parser;
 
 use std::io::{self, Read};
 use std::env;
-use inflector::Inflector;
 use std::process::exit;
+use self::parser::*;
 
 fn main() {
 
@@ -13,19 +16,17 @@ fn main() {
   let select = | conversion : &String | -> Option<F> {
 
     match conversion.as_ref() {
-        "upper" => Some(|s| s.to_uppercase()),
-        "lower" => Some(|s| s.to_lowercase()),
-        "camel" => Some(|s| s.to_camel_case()),
-        "class" => Some(|s| s.to_class_case()),
-        "kebab" => Some(|s| s.to_kebab_case()),
-        "train" => Some(|s| s.to_train_case()),
-        "table" => Some(|s| s.to_table_case()),
-        "sentence" => Some(|s| s.to_sentence_case()),
-        "snake" => Some(|s| s.to_snake_case()),
-        "pascal" => Some(|s| s.to_pascal_case()),
-        "screamingsnake" => Some(|s| s.to_screaming_snake_case()),
-        "title" => Some(|s| s.to_title_case()),
-        _ => None,
+        "upper"          => Some(|s| s.to_uppercase()),
+        "lower"          => Some(|s| s.to_lowercase()),
+        "camel"          => Some(|s| to_case(s, CaseType::Camel)),
+        "kebab"          => Some(|s| to_case(s, CaseType::Kebab)),
+        "train"          => Some(|s| to_case(s, CaseType::Train)),
+        "sentence"       => Some(|s| to_case(s, CaseType::Sentence)),
+        "snake"          => Some(|s| to_case(s, CaseType::Snake)),
+        "pascal"         => Some(|s| to_case(s, CaseType::Pascal)),
+        "screamingsnake" => Some(|s| to_case(s, CaseType::Screamingsnake)),
+        "title"          => Some(|s| to_case(s, CaseType::Title)),
+        _                => None,
     }
 
   };

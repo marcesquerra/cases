@@ -1,6 +1,6 @@
 [package]
 name = "cases"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Marc Esquerra <esquerra@bryghts.com>"]
 edition = "2018"
 description = "Case converting utility for the console"
@@ -9,4 +9,4 @@ homepage = "https://github.com/marcesquerra/cases"
 repository = "https://github.com/marcesquerra/cases"
 
 [dependencies]
-Inflector = "0.11.4"
+nom = "5.0.0"
