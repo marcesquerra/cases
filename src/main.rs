@@ -43,7 +43,7 @@ fn main() {
         // Could also `match` on the `Result` if you wanted to handle `Err` 
         while let Ok(n_bytes) = stdin.read_to_string(&mut line) {
            if n_bytes == 0 { break }
-           println!("{}", f(&line));
+           print!("{}", f(&line));
            line.clear();
         }
       },
@@ -56,7 +56,7 @@ fn main() {
     let a = &args[2];
     match select(&args[1]) {
       Some(f) =>
-        println!("{}", f(a)),
+        print!("{}", f(a)),
       None =>
         exit(2)
     };
