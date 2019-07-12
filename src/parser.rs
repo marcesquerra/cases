@@ -211,8 +211,16 @@ fn word_case(input: &str) -> IResult<&str, Token> {
   Ok((input, Token::Case(r)))
 }
 
+fn char_case(input: &str) -> IResult<&str, Token> {
+  let (input, head) = any_single(input)?;
+
+  let r = vec!(head);
+
+  Ok((input, Token::Case(r)))
+}
+
 fn single_case(input: &str) -> IResult<&str, Token> {
-  alt((kebab_case, snake_case, screamingsnake_case, train_case, camel_case, pascal_case, sentence_case, word_case))(input)
+  alt((kebab_case, snake_case, screamingsnake_case, train_case, camel_case, pascal_case, sentence_case, word_case, char_case))(input)
 }
 
 fn text(input: &str) -> IResult<&str, Token> {
@@ -441,5 +449,9 @@ fn parse_cases() {
   assert_eq!(to_case("one_two_three one_two_three", CaseType::Camel), "oneTwoThree oneTwoThree".to_string());
 
   assert_eq!(to_case("one two three|", CaseType::Camel), "oneTwoThree|".to_string());
+
+  assert_eq!(to_case("", CaseType::Camel), "".to_string());
+  assert_eq!(to_case("s", CaseType::Camel), "s".to_string());
+  assert_eq!(to_case("          \"camel\"          => Some(|s| to_case(s, CaseType::Camel)),", CaseType::Camel), "          \"camel\"          => some(|s| toCase(s, caseType::camel)),".to_string());
 }
 
