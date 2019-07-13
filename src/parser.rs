@@ -38,21 +38,21 @@ fn is_alphabeticcont(c: char) -> bool {
 
 fn lowercont_segment(input: &str) -> IResult<&str, String> {
   map(
-    take_while1(is_lowercont),
+    take_while(is_lowercont),
     to_lower
   )(input)
 }
 
 fn uppercont_segment(input: &str) -> IResult<&str, String> {
   map(
-    take_while1(is_uppercont),
+    take_while(is_uppercont),
     to_lower
   )(input)
 }
 
 fn anycont_segment(input: &str) -> IResult<&str, String> {
   map(
-    take_while1(is_alphabeticcont),
+    take_while(is_alphabeticcont),
     to_lower
   )(input)
 }
@@ -211,16 +211,16 @@ fn word_case(input: &str) -> IResult<&str, Token> {
   Ok((input, Token::Case(r)))
 }
 
-fn char_case(input: &str) -> IResult<&str, Token> {
-  let (input, head) = any_single(input)?;
+// fn char_case(input: &str) -> IResult<&str, Token> {
+//   let (input, head) = any_single(input)?;
 
-  let r = vec!(head);
+//   let r = vec!(head);
 
-  Ok((input, Token::Case(r)))
-}
+//   Ok((input, Token::Case(r)))
+// }
 
 fn single_case(input: &str) -> IResult<&str, Token> {
-  alt((kebab_case, snake_case, screamingsnake_case, train_case, camel_case, pascal_case, sentence_case, word_case, char_case))(input)
+  alt((kebab_case, snake_case, screamingsnake_case, train_case, camel_case, pascal_case, sentence_case, word_case))(input)
 }
 
 fn text(input: &str) -> IResult<&str, Token> {
@@ -358,7 +358,7 @@ fn parse_cases() {
   assert_eq!(single_case("ONE TWO THREE"), Ok(("", Token::Case(vec!("one", "two", "three").iter().map(|&s| s.to_string()).collect::<Vec<_>>()))));
   assert_eq!(single_case("one two three"), Ok(("", Token::Case(vec!("one", "two", "three").iter().map(|&s| s.to_string()).collect::<Vec<_>>()))));
   assert_eq!(single_case("One Two Three"), Ok(("", Token::Case(vec!("one", "two", "three").iter().map(|&s| s.to_string()).collect::<Vec<_>>()))));
-  assert_eq!(single_case("oNe tWo thRee"), Ok(("", Token::Case(vec!("one", "two", "three").iter().map(|&s| s.to_string()).collect::<Vec<_>>()))));
+  assert_eq!(single_case("oNe tWo thRee"), Ok((" tWo thRee", Token::Case(vec!("o", "ne").iter().map(|&s| s.to_string()).collect::<Vec<_>>()))));
 
   assert_eq!(render_token(&single_case("oneTwoThree").unwrap().1, &CaseType::Upper), "ONETWOTHREE".to_string());
   assert_eq!(render_token(&single_case("oneTwoThree").unwrap().1, &CaseType::Lower), "onetwothree".to_string());
@@ -453,5 +453,7 @@ fn parse_cases() {
   assert_eq!(to_case("", CaseType::Camel), "".to_string());
   assert_eq!(to_case("s", CaseType::Camel), "s".to_string());
   assert_eq!(to_case("          \"camel\"          => Some(|s| to_case(s, CaseType::Camel)),", CaseType::Camel), "          \"camel\"          => some(|s| toCase(s, caseType::camel)),".to_string());
+  assert_eq!(to_case("*** this is a *scratch* buffer which won't be automatically saved ***", CaseType::Camel), "*** thisIsA *scratch* bufferWhichWon\'tBeAutomaticallySaved ***".to_string());
+
 }
 
