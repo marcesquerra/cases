@@ -2,7 +2,7 @@
 # It is not intended for manual editing.
 [[package]]
 name = "cases"
-version = "0.2.2"
+version = "0.2.4"
 dependencies = [
  "nom 5.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
