@@ -38,21 +38,21 @@ fn is_alphabeticcont(c: char) -> bool {
 
 fn lowercont_segment(input: &str) -> IResult<&str, String> {
   map(
-    take_while1(is_lowercont),
+    take_while(is_lowercont),
     to_lower
   )(input)
 }
 
 fn uppercont_segment(input: &str) -> IResult<&str, String> {
   map(
-    take_while1(is_uppercont),
+    take_while(is_uppercont),
     to_lower
   )(input)
 }
 
 fn anycont_segment(input: &str) -> IResult<&str, String> {
   map(
-    take_while1(is_alphabeticcont),
+    take_while(is_alphabeticcont),
     to_lower
   )(input)
 }
@@ -87,6 +87,10 @@ fn lower_segment(input: &str) -> IResult<&str, String> {
   Ok((input, r))
 }
 
+fn lower_segment_short(input: &str) -> IResult<&str, String> {
+  alt((lower_segment, lower_single))(input)
+}
+
 fn upper_segment(input: &str) -> IResult<&str, String> {
   let (input, head) = upper_single(input)?;
   let (input, tail) = uppercont_segment(input)?;
@@ -94,6 +98,10 @@ fn upper_segment(input: &str) -> IResult<&str, String> {
   let r = format!("{}{}", head, tail);
 
   Ok((input, r))
+}
+
+fn upper_segment_short(input: &str) -> IResult<&str, String> {
+  alt((upper_segment, upper_single))(input)
 }
 
 fn title_segment(input: &str) -> IResult<&str, String> {
@@ -105,6 +113,10 @@ fn title_segment(input: &str) -> IResult<&str, String> {
   Ok((input, r))
 }
 
+fn title_segment_short(input: &str) -> IResult<&str, String> {
+  alt((title_segment, upper_single))(input)
+}
+
 fn any_segment(input: &str) -> IResult<&str, String> {
   let (input, head) = any_single(input)?;
   let (input, tail) = anycont_segment(input)?;
@@ -112,6 +124,10 @@ fn any_segment(input: &str) -> IResult<&str, String> {
   let r = format!("{}{}", head, tail);
 
   Ok((input, r))
+}
+
+fn any_segment_short(input: &str) -> IResult<&str, String> {
+  alt((any_segment, any_single))(input)
 }
 
 pub fn prefixed_segment(
@@ -126,7 +142,7 @@ pub fn prefixed_segment(
   }
 }
 
-fn pascal_case(input: &str) -> IResult<&str, Token> {
+fn pascal_case_short(input: &str) -> IResult<&str, Token> {
   let (input, head) = title_segment(input)?;
   let (input, mut tail) = many1(title_segment)(input)?;
 
@@ -137,7 +153,24 @@ fn pascal_case(input: &str) -> IResult<&str, Token> {
   Ok((input, Token::Case(r)))
 }
 
-fn camel_case(input: &str) -> IResult<&str, Token> {
+fn pascal_case_long(input: &str) -> IResult<&str, Token> {
+  let (input, head) = title_segment(input)?;
+  let (input, mut tail) = many0(title_segment)(input)?;
+  let (input, end) = upper_single(input)?;
+
+  let mut r = vec!(head);
+
+  r.append(&mut tail);
+  r.append(&mut vec!(end));
+
+  Ok((input, Token::Case(r)))
+}
+
+fn pascal_case(input: &str) -> IResult<&str, Token> {
+  alt((pascal_case_long, pascal_case_short))(input)
+}
+
+fn camel_case_short(input: &str) -> IResult<&str, Token> {
   let (input, head) = lower_segment(input)?;
   let (input, mut tail) = many1(title_segment)(input)?;
 
@@ -148,9 +181,26 @@ fn camel_case(input: &str) -> IResult<&str, Token> {
   Ok((input, Token::Case(r)))
 }
 
+fn camel_case_long(input: &str) -> IResult<&str, Token> {
+  let (input, head) = lower_segment(input)?;
+  let (input, mut tail) = many0(title_segment)(input)?;
+  let (input, end) = upper_single(input)?;
+
+  let mut r = vec!(head);
+
+  r.append(&mut tail);
+  r.append(&mut vec!(end));
+
+  Ok((input, Token::Case(r)))
+}
+
+fn camel_case(input: &str) -> IResult<&str, Token> {
+  alt((camel_case_long, camel_case_short))(input)
+}
+
 fn kebab_case(input: &str) -> IResult<&str, Token> {
   let (input, head) = lower_segment(input)?;
-  let (input, mut tail) = many1(prefixed_segment('-', lower_segment))(input)?;
+  let (input, mut tail) = many1(prefixed_segment('-', lower_segment_short))(input)?;
 
   let mut r = vec!(head);
 
@@ -161,7 +211,7 @@ fn kebab_case(input: &str) -> IResult<&str, Token> {
 
 fn train_case(input: &str) -> IResult<&str, Token> {
   let (input, head) = title_segment(input)?;
-  let (input, mut tail) = many1(prefixed_segment('-', title_segment))(input)?;
+  let (input, mut tail) = many1(prefixed_segment('-', title_segment_short))(input)?;
 
   let mut r = vec!(head);
 
@@ -172,7 +222,7 @@ fn train_case(input: &str) -> IResult<&str, Token> {
 
 fn snake_case(input: &str) -> IResult<&str, Token> {
   let (input, head) = lower_segment(input)?;
-  let (input, mut tail) = many1(prefixed_segment('_', lower_segment))(input)?;
+  let (input, mut tail) = many1(prefixed_segment('_', lower_segment_short))(input)?;
 
   let mut r = vec!(head);
 
@@ -183,7 +233,7 @@ fn snake_case(input: &str) -> IResult<&str, Token> {
 
 fn screamingsnake_case(input: &str) -> IResult<&str, Token> {
   let (input, head) = upper_segment(input)?;
-  let (input, mut tail) = many1(prefixed_segment('_', upper_segment))(input)?;
+  let (input, mut tail) = many1(prefixed_segment('_', upper_segment_short))(input)?;
 
   let mut r = vec!(head);
 
@@ -358,7 +408,7 @@ fn parse_cases() {
   assert_eq!(single_case("ONE TWO THREE"), Ok(("", Token::Case(vec!("one", "two", "three").iter().map(|&s| s.to_string()).collect::<Vec<_>>()))));
   assert_eq!(single_case("one two three"), Ok(("", Token::Case(vec!("one", "two", "three").iter().map(|&s| s.to_string()).collect::<Vec<_>>()))));
   assert_eq!(single_case("One Two Three"), Ok(("", Token::Case(vec!("one", "two", "three").iter().map(|&s| s.to_string()).collect::<Vec<_>>()))));
-  assert_eq!(single_case("oNe tWo thRee"), Ok(("", Token::Case(vec!("one", "two", "three").iter().map(|&s| s.to_string()).collect::<Vec<_>>()))));
+  assert_eq!(single_case("oNe tWo thRee"), Ok((" tWo thRee", Token::Case(vec!("o", "ne").iter().map(|&s| s.to_string()).collect::<Vec<_>>()))));
 
   assert_eq!(render_token(&single_case("oneTwoThree").unwrap().1, &CaseType::Upper), "ONETWOTHREE".to_string());
   assert_eq!(render_token(&single_case("oneTwoThree").unwrap().1, &CaseType::Lower), "onetwothree".to_string());
@@ -448,6 +498,9 @@ fn parse_cases() {
   assert_eq!(to_case("oneTwoThree oneTwoThree", CaseType::Sentence), "One two three One two three".to_string());
   assert_eq!(to_case("one_two_three one_two_three", CaseType::Camel), "oneTwoThree oneTwoThree".to_string());
 
+  assert_eq!(pascal_case("FoOo"), Ok(("", Token::Case(vec!("fo", "oo").iter().map(|&s| s.to_string()).collect::<Vec<_>>()))));
+  assert_eq!(pascal_case("FoO"), Ok(("", Token::Case(vec!("fo", "o").iter().map(|&s| s.to_string()).collect::<Vec<_>>()))));
+
   assert_eq!(to_case("FoO", CaseType::Upper),          "FOO".to_string());
   assert_eq!(to_case("FoO", CaseType::Lower),          "foo".to_string());
   assert_eq!(to_case("FoO", CaseType::Snake),          "fo_o".to_string());
@@ -456,8 +509,85 @@ fn parse_cases() {
   assert_eq!(to_case("FoO", CaseType::Pascal),         "FoO".to_string());
   assert_eq!(to_case("FoO", CaseType::Train),          "Fo-O".to_string());
   assert_eq!(to_case("FoO", CaseType::Title),          "Fo O".to_string());
-  assert_eq!(to_case("FoO", CaseType::Sentence),       "Fo O".to_string());
+  assert_eq!(to_case("FoO", CaseType::Sentence),       "Fo o".to_string());
   assert_eq!(to_case("FoO", CaseType::Camel),          "foO".to_string());
+
+  assert_eq!(to_case("foO", CaseType::Upper),          "FOO".to_string());
+  assert_eq!(to_case("foO", CaseType::Lower),          "foo".to_string());
+  assert_eq!(to_case("foO", CaseType::Snake),          "fo_o".to_string());
+  assert_eq!(to_case("foO", CaseType::Kebab),          "fo-o".to_string());
+  assert_eq!(to_case("foO", CaseType::Screamingsnake), "FO_O".to_string());
+  assert_eq!(to_case("foO", CaseType::Pascal),         "FoO".to_string());
+  assert_eq!(to_case("foO", CaseType::Train),          "Fo-O".to_string());
+  assert_eq!(to_case("foO", CaseType::Title),          "Fo O".to_string());
+  assert_eq!(to_case("foO", CaseType::Sentence),       "Fo o".to_string());
+  assert_eq!(to_case("foO", CaseType::Camel),          "foO".to_string());
+
+  assert_eq!(to_case("fo_o", CaseType::Upper),          "FOO".to_string());
+  assert_eq!(to_case("fo_o", CaseType::Lower),          "foo".to_string());
+  assert_eq!(to_case("fo_o", CaseType::Snake),          "fo_o".to_string());
+  assert_eq!(to_case("fo_o", CaseType::Kebab),          "fo-o".to_string());
+  assert_eq!(to_case("fo_o", CaseType::Screamingsnake), "FO_O".to_string());
+  assert_eq!(to_case("fo_o", CaseType::Pascal),         "FoO".to_string());
+  assert_eq!(to_case("fo_o", CaseType::Train),          "Fo-O".to_string());
+  assert_eq!(to_case("fo_o", CaseType::Title),          "Fo O".to_string());
+  assert_eq!(to_case("fo_o", CaseType::Sentence),       "Fo o".to_string());
+  assert_eq!(to_case("fo_o", CaseType::Camel),          "foO".to_string());
+
+  assert_eq!(to_case("fo-o", CaseType::Upper),          "FOO".to_string());
+  assert_eq!(to_case("fo-o", CaseType::Lower),          "foo".to_string());
+  assert_eq!(to_case("fo-o", CaseType::Snake),          "fo_o".to_string());
+  assert_eq!(to_case("fo-o", CaseType::Kebab),          "fo-o".to_string());
+  assert_eq!(to_case("fo-o", CaseType::Screamingsnake), "FO_O".to_string());
+  assert_eq!(to_case("fo-o", CaseType::Pascal),         "FoO".to_string());
+  assert_eq!(to_case("fo-o", CaseType::Train),          "Fo-O".to_string());
+  assert_eq!(to_case("fo-o", CaseType::Title),          "Fo O".to_string());
+  assert_eq!(to_case("fo-o", CaseType::Sentence),       "Fo o".to_string());
+  assert_eq!(to_case("fo-o", CaseType::Camel),          "foO".to_string());
+
+  assert_eq!(to_case("FO_O", CaseType::Upper),          "FOO".to_string());
+  assert_eq!(to_case("FO_O", CaseType::Lower),          "foo".to_string());
+  assert_eq!(to_case("FO_O", CaseType::Snake),          "fo_o".to_string());
+  assert_eq!(to_case("FO_O", CaseType::Kebab),          "fo-o".to_string());
+  assert_eq!(to_case("FO_O", CaseType::Screamingsnake), "FO_O".to_string());
+  assert_eq!(to_case("FO_O", CaseType::Pascal),         "FoO".to_string());
+  assert_eq!(to_case("FO_O", CaseType::Train),          "Fo-O".to_string());
+  assert_eq!(to_case("FO_O", CaseType::Title),          "Fo O".to_string());
+  assert_eq!(to_case("FO_O", CaseType::Sentence),       "Fo o".to_string());
+  assert_eq!(to_case("FO_O", CaseType::Camel),          "foO".to_string());
+
+  assert_eq!(to_case("Fo-O", CaseType::Upper),          "FOO".to_string());
+  assert_eq!(to_case("Fo-O", CaseType::Lower),          "foo".to_string());
+  assert_eq!(to_case("Fo-O", CaseType::Snake),          "fo_o".to_string());
+  assert_eq!(to_case("Fo-O", CaseType::Kebab),          "fo-o".to_string());
+  assert_eq!(to_case("Fo-O", CaseType::Screamingsnake), "FO_O".to_string());
+  assert_eq!(to_case("Fo-O", CaseType::Pascal),         "FoO".to_string());
+  assert_eq!(to_case("Fo-O", CaseType::Train),          "Fo-O".to_string());
+  assert_eq!(to_case("Fo-O", CaseType::Title),          "Fo O".to_string());
+  assert_eq!(to_case("Fo-O", CaseType::Sentence),       "Fo o".to_string());
+  assert_eq!(to_case("Fo-O", CaseType::Camel),          "foO".to_string());
+
+  assert_eq!(to_case("Fo O", CaseType::Upper),          "FOO".to_string());
+  assert_eq!(to_case("Fo O", CaseType::Lower),          "foo".to_string());
+  assert_eq!(to_case("Fo O", CaseType::Snake),          "fo_o".to_string());
+  assert_eq!(to_case("Fo O", CaseType::Kebab),          "fo-o".to_string());
+  assert_eq!(to_case("Fo O", CaseType::Screamingsnake), "FO_O".to_string());
+  assert_eq!(to_case("Fo O", CaseType::Pascal),         "FoO".to_string());
+  assert_eq!(to_case("Fo O", CaseType::Train),          "Fo-O".to_string());
+  assert_eq!(to_case("Fo O", CaseType::Title),          "Fo O".to_string());
+  assert_eq!(to_case("Fo O", CaseType::Sentence),       "Fo o".to_string());
+  assert_eq!(to_case("Fo O", CaseType::Camel),          "foO".to_string());
+
+  assert_eq!(to_case("Fo o", CaseType::Upper),          "FOO".to_string());
+  assert_eq!(to_case("Fo o", CaseType::Lower),          "foo".to_string());
+  assert_eq!(to_case("Fo o", CaseType::Snake),          "fo_o".to_string());
+  assert_eq!(to_case("Fo o", CaseType::Kebab),          "fo-o".to_string());
+  assert_eq!(to_case("Fo o", CaseType::Screamingsnake), "FO_O".to_string());
+  assert_eq!(to_case("Fo o", CaseType::Pascal),         "FoO".to_string());
+  assert_eq!(to_case("Fo o", CaseType::Train),          "Fo-O".to_string());
+  assert_eq!(to_case("Fo o", CaseType::Title),          "Fo O".to_string());
+  assert_eq!(to_case("Fo o", CaseType::Sentence),       "Fo o".to_string());
+  assert_eq!(to_case("Fo o", CaseType::Camel),          "foO".to_string());
 
   assert_eq!(to_case("one two three|", CaseType::Camel), "oneTwoThree|".to_string());
 
