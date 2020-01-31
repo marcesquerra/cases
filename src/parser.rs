@@ -448,6 +448,17 @@ fn parse_cases() {
   assert_eq!(to_case("oneTwoThree oneTwoThree", CaseType::Sentence), "One two three One two three".to_string());
   assert_eq!(to_case("one_two_three one_two_three", CaseType::Camel), "oneTwoThree oneTwoThree".to_string());
 
+  assert_eq!(to_case("FoO", CaseType::Upper),          "FOO".to_string());
+  assert_eq!(to_case("FoO", CaseType::Lower),          "foo".to_string());
+  assert_eq!(to_case("FoO", CaseType::Snake),          "fo_o".to_string());
+  assert_eq!(to_case("FoO", CaseType::Kebab),          "fo-o".to_string());
+  assert_eq!(to_case("FoO", CaseType::Screamingsnake), "FO_O".to_string());
+  assert_eq!(to_case("FoO", CaseType::Pascal),         "FoO".to_string());
+  assert_eq!(to_case("FoO", CaseType::Train),          "Fo-O".to_string());
+  assert_eq!(to_case("FoO", CaseType::Title),          "Fo O".to_string());
+  assert_eq!(to_case("FoO", CaseType::Sentence),       "Fo O".to_string());
+  assert_eq!(to_case("FoO", CaseType::Camel),          "foO".to_string());
+
   assert_eq!(to_case("one two three|", CaseType::Camel), "oneTwoThree|".to_string());
 
   assert_eq!(to_case("", CaseType::Camel), "".to_string());
