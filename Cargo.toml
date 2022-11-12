@@ -9,4 +9,4 @@ homepage = "https://github.com/marcesquerra/cases"
 repository = "https://github.com/marcesquerra/cases"
 
 [dependencies]
-nom = "5.0.0"
+nom = "7.1.1"

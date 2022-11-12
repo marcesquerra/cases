@@ -1,0 +1,64 @@
+{
+    "cargo-watch": {
+        "branch": "main",
+        "description": "Watches over your Cargo project's source.",
+        "homepage": "https://watchexec.github.io/#cargo-watch",
+        "owner": "watchexec",
+        "repo": "cargo-watch",
+        "rev": "f8ee5480dbaec63af0f98f3c673cc4cf0330d0b7",
+        "sha256": "1llnsgdg7s4050y7xa2g7b07d2ca79yfc7vq4h3hz02m7gfzcndz",
+        "type": "tarball",
+        "url": "https://github.com/watchexec/cargo-watch/archive/f8ee5480dbaec63af0f98f3c673cc4cf0330d0b7.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "version": "v8.1.2"
+    },
+    "niv": {
+        "branch": "master",
+        "description": "Easy dependency management for Nix projects",
+        "homepage": "https://github.com/nmattia/niv",
+        "owner": "nmattia",
+        "repo": "niv",
+        "rev": "82e5cd1ad3c387863f0545d7591512e76ab0fc41",
+        "sha256": "090l219mzc0gi33i3psgph6s2pwsc8qy4lyrqjdj4qzkvmaj65a7",
+        "type": "tarball",
+        "url": "https://github.com/nmattia/niv/archive/82e5cd1ad3c387863f0545d7591512e76ab0fc41.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs": {
+        "branch": "release-22.05",
+        "description": "Nix Packages collection",
+        "homepage": "",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "2ed5b6b0f5d8a06c9db95c2c6b7bd559507e1c24",
+        "sha256": "1h4a0wl6gq078srs1g14gbj7laa8640pch1fjbmwyx51l4yipwk4",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs/archive/2ed5b6b0f5d8a06c9db95c2c6b7bd559507e1c24.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs-mozilla": {
+        "branch": "master",
+        "description": "Mozilla overlay for Nixpkgs.",
+        "homepage": "",
+        "owner": "mozilla",
+        "repo": "nixpkgs-mozilla",
+        "rev": "80627b282705101e7b38e19ca6e8df105031b072",
+        "sha256": "11g9lppm53f5aq7a0fnwh5hivdhn2p1wmhwgmz1052x10hfqjrah",
+        "type": "tarball",
+        "url": "https://github.com/mozilla/nixpkgs-mozilla/archive/80627b282705101e7b38e19ca6e8df105031b072.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "rust-analyzer": {
+        "branch": "master",
+        "description": "A Rust compiler front-end for IDEs",
+        "homepage": "https://rust-analyzer.github.io/",
+        "owner": "rust-lang",
+        "repo": "rust-analyzer",
+        "rev": "45ec315e01dc8dd1146dfeb65f0ef6e5c2efed78",
+        "sha256": "0ghmyixh86ncf06rb36pyxsqc1zjhni0k69zaxfp5gl550w9m09x",
+        "type": "tarball",
+        "url": "https://github.com/rust-lang/rust-analyzer/archive/45ec315e01dc8dd1146dfeb65f0ef6e5c2efed78.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "version": "2022-11-07"
+    }
+}
